@@ -20,9 +20,23 @@ namespace client
     /// </summary>
     public partial class MainWindow : Window
     {
+        private RichTextBox textbox;
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void OnStartup(object sender, EventArgs e)
+        {
+            textbox = FindName("Input") as RichTextBox;
+        }
+
+
+        private void OnSend(object sender, RoutedEventArgs e)
+        {
+            var range = new TextRange(textbox.Document.ContentStart, textbox.Document.ContentEnd);
+            var text = range.Text;
         }
     }
 }

@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="STVG Discord Client" Height="450" Width="800"
+        Initialized="OnStartup">
+    <DockPanel>
+        <DockPanel Height="100" DockPanel.Dock="Bottom">
+            <Button DockPanel.Dock="Right" Width="100" Click="OnSend">Send</Button>
+            <RichTextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+        </DockPanel>
+        <ListView Width="200" DockPanel.Dock="Left"></ListView>
+        <ListView></ListView>
+    </DockPanel>
 </Window>
