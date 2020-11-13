@@ -20,23 +20,27 @@ namespace client
     /// </summary>
     public partial class MainWindow : Window
     {
-        private RichTextBox textbox;
+        private RichTextBox _textbox;
+        private Bot _bot;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void OnStartup(object sender, EventArgs e)
+        private async void OnStartup(object sender, EventArgs e)
         {
-            textbox = FindName("Input") as RichTextBox;
+            _textbox = FindName("Input") as RichTextBox;
+            _bot = new Bot();
+            await _bot.Login();
         }
 
 
-        private void OnSend(object sender, RoutedEventArgs e)
+        private async void OnSend(object sender, RoutedEventArgs e)
         {
-            var range = new TextRange(textbox.Document.ContentStart, textbox.Document.ContentEnd);
-            var text = range.Text;
+            var doc = _textbox.Document;
+            var range = new TextRange(doc.ContentStart, doc.ContentEnd);
+            await _bot.Send(range.Text);
         }
     }
 }
