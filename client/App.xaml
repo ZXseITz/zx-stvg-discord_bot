@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:client"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <local:Model x:Key="Model" />
     </Application.Resources>
 </Application>

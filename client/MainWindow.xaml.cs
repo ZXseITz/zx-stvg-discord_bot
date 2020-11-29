@@ -22,6 +22,7 @@ namespace client
     {
         private RichTextBox _textbox;
         private Bot _bot;
+        private Model _model;
 
         public MainWindow()
         {
@@ -30,8 +31,10 @@ namespace client
 
         private async void OnStartup(object sender, EventArgs e)
         {
+            _model = FindResource("Model") as Model;
+            if (_model == null) throw new Exception("Cannot find model");
             _textbox = FindName("Input") as RichTextBox;
-            _bot = new Bot();
+            _bot = new Bot(_model);
             await _bot.Login();
         }
 

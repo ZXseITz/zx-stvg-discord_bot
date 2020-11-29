@@ -4,10 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:client"
+        xmlns:discord="clr-namespace:Discord;assembly=Discord.Net.Core"
+        xmlns:webSocket="clr-namespace:Discord.WebSocket;assembly=Discord.Net.WebSocket"
         mc:Ignorable="d"
         Title="STVG Discord Client" Height="450" Width="800"
         Initialized="OnStartup">
-    <DockPanel>
+    <Window.Resources>
+        <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type webSocket:SocketTextChannel}">
+            <TextBlock Text="{Binding Path=Name}"/>
+        </DataTemplate>
+    </Window.Resources>
+    <DockPanel DataContext="{StaticResource Model}">
         <DockPanel Height="100" DockPanel.Dock="Bottom">
             <Button DockPanel.Dock="Right" Width="100" Click="OnSend">Send</Button>
             <RichTextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible">
@@ -18,7 +25,11 @@
                 </RichTextBox.Resources>
             </RichTextBox>
         </DockPanel>
-        <ListView Width="200" DockPanel.Dock="Left"></ListView>
-        <ListView></ListView>
+        <ListView x:Name="ChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Channels}"
+                  ItemTemplate="{StaticResource ChannelTemplate}">
+        </ListView>
+        <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}">
+            
+        </ListView>
     </DockPanel>
 </Window>
