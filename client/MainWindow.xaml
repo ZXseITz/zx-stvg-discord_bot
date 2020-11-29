@@ -26,7 +26,7 @@
             </RichTextBox>
         </DockPanel>
         <ListView x:Name="ChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Channels}"
-                  ItemTemplate="{StaticResource ChannelTemplate}">
+                  ItemTemplate="{StaticResource ChannelTemplate}" SelectionChanged="OnChannelSelected">
         </ListView>
         <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}">
             

@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Discord.Rest;
-using Discord.WebSocket;
+﻿using System.Collections.ObjectModel;
+using Discord;
 
 namespace client
 {
     public class Model
     {
-        public ObservableCollection<SocketTextChannel> Channels { get; }
-        public ObservableCollection<RestUserMessage> Messages { get; }
+        public ObservableCollection<ITextChannel> Channels { get; }
+        public ObservableCollection<IMessage> Messages { get; }
 
         public Model()
         {
-            Channels = new ObservableCollection<SocketTextChannel>();
-            Messages = new ObservableCollection<RestUserMessage>();
+            Channels = new ObservableCollection<ITextChannel>();
+            Messages = new ObservableCollection<IMessage>();
         }
     }
 }

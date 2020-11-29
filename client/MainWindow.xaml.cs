@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Discord;
 
 namespace client
 {
@@ -36,6 +37,12 @@ namespace client
             _textbox = FindName("Input") as RichTextBox;
             _bot = new Bot(_model);
             await _bot.Login();
+        }
+
+        private async void OnChannelSelected(object sender, SelectionChangedEventArgs e)
+        {
+            var channel = e.AddedItems[0] as ITextChannel;
+            await _bot.ListMessages(channel);
         }
 
 
