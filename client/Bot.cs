@@ -13,16 +13,18 @@ namespace client
         private readonly DiscordSocketClient _client;
         private readonly Model _model;
         private SocketGuild _guild;
-        private ulong _userId;
+        private ITextChannel _channel;
 
-        private ulong _channelId;
+        private ulong _guildId;
+        private ulong _userId;
 
         public Bot(Model model)
         {
             _client = new DiscordSocketClient();
             _model = model;
             _userId = ulong.Parse(File.ReadAllText("../../../secret/user_id"));
-            _channelId = ulong.Parse(File.ReadAllText("../../../secret/channel_id"));
+            _guildId = ulong.Parse(File.ReadAllText("../../../secret/dev_id"));
+            // var guildId = ulong.Parse(File.ReadAllText("../../../secret/guild_id"));  // todo enable prod
 
             _client.Ready += () => OnReady();
         }
@@ -30,8 +32,7 @@ namespace client
         private Task OnReady()
         {
             // Console.WriteLine("Bot is ready");
-            var guildId = ulong.Parse(File.ReadAllText("../../../secret/guild_id"));
-            _guild = _client.GetGuild(guildId);
+            _guild = _client.GetGuild(_guildId);
             var channels = _guild.Channels;
             Application.Current?.Dispatcher.InvokeAsync(() =>
             {
@@ -46,8 +47,16 @@ namespace client
             return null;
         }
 
-        public async Task ListMessages(ITextChannel channel)
+        public async Task Login()
         {
+            var token = File.ReadAllText("../../../secret/bot_token");
+            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.StartAsync();
+        }
+
+        public async Task SetChannel(ITextChannel channel)
+        {
+            _channel = channel;
             _model.Messages.Clear();
             var enumerator = channel.GetMessagesAsync().GetAsyncEnumerator();
             try
@@ -69,17 +78,9 @@ namespace client
             }
         }
 
-        public async Task Login()
-        {
-            var token = File.ReadAllText("../../../secret/bot_token");
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-        }
-
         public async Task Send(string text)
         {
-            var channel = _client.GetChannel(_channelId) as SocketTextChannel;
-            await channel?.SendMessageAsync(text);
+            await _channel.SendMessageAsync(text);
         }
     }
 }

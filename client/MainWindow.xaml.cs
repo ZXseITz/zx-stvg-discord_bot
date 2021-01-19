@@ -42,7 +42,7 @@ namespace client
         private async void OnChannelSelected(object sender, SelectionChangedEventArgs e)
         {
             var channel = e.AddedItems[0] as ITextChannel;
-            await _bot.ListMessages(channel);
+            await _bot.SetChannel(channel);
         }
 
 
