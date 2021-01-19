@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Discord.Rest;
@@ -58,29 +59,23 @@ namespace client
         {
             _channel = channel;
             _model.Messages.Clear();
-            var enumerator = channel.GetMessagesAsync().GetAsyncEnumerator();
-            try
+            var collection = await channel.GetMessagesAsync().FlattenAsync();
+            var enumerator = collection.Reverse().GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                while (await enumerator.MoveNextAsync())
+                var message = enumerator.Current;
+                if (message is IUserMessage && message.Author.Id == _userId)
                 {
-                    foreach (var message in enumerator.Current)
-                    {
-                        if (message.Author.Id == _userId)
-                        {
-                            _model.Messages.Add(message);
-                        }
-                    }
+                    _model.Messages.Add(message);
                 }
             }
-            finally
-            {
-                if (enumerator != null) await enumerator.DisposeAsync();
-            }
+            enumerator.Dispose();
         }
 
         public async Task Send(string text)
         {
-            await _channel.SendMessageAsync(text);
+            var msg = await _channel.SendMessageAsync(text);
+            _model.Messages.Add(msg);
         }
     }
 }
