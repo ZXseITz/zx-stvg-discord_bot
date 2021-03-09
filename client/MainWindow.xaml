@@ -21,6 +21,7 @@
         <DockPanel Height="100" DockPanel.Dock="Bottom">
             <StackPanel DockPanel.Dock="Right" Width="200">
                 <Button Click="OnSend">Send</Button>
+                <Button Click="OnDelete">Delete</Button>
                 <Button Click="OnClear">Cancel</Button>
             </StackPanel>
             <TextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible"

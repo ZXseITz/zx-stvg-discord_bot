@@ -40,6 +40,12 @@ namespace client
             }
         }
 
+        private void ClearUserText()
+        {
+            _selectedMessage = null;
+            _input.Text = "";
+        }
+
         private async void OnChannelSelected(object sender, SelectionChangedEventArgs e)
         {
             if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is ITextChannel channel)) return;
@@ -59,22 +65,20 @@ namespace client
             ClearUserText();
         }
 
-        private void OnClear(object sender, RoutedEventArgs e)
-        {
-            ClearUserText();
-        }
-
-        private void ClearUserText()
-        {
-            _selectedMessage = null;
-            _input.Text = "";
-        }
-
         private void OnMessageSelected(object sender, SelectionChangedEventArgs e)
         {
             if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is IUserMessage message)) return;
             _selectedMessage = message;
             _input.Text = message.Content;
+        }
+
+        private void OnEnter(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && !Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+            {
+                OnSend(sender, e);
+                e.Handled = true;
+            }
         }
         
         private async void OnSend(object sender, RoutedEventArgs e)
@@ -96,13 +100,19 @@ namespace client
             ClearUserText();
         }
 
-        private void OnEnter(object sender, KeyEventArgs e)
+        private void OnClear(object sender, RoutedEventArgs e)
         {
-            if (e.Key == Key.Return && !Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-            {
-                OnSend(sender, e);
-                e.Handled = true;
+            ClearUserText();
+        }
+
+        private async void OnDelete(object sender, RoutedEventArgs e)
+        {
+            if (_selectedMessage != null)
+            { 
+                _model.Messages.Remove(_selectedMessage);
+                await _selectedMessage.DeleteAsync();
             }
+            ClearUserText();
         }
     }
 }
