@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Discord;
-using Discord.WebSocket;
 
 namespace client
 {
@@ -24,7 +14,7 @@ namespace client
     {
         private Bot _bot;
         private Model _model;
-        private RichTextBox _input;
+        private TextBox _input;
         private ITextChannel _selectedChannel;
         private IUserMessage _selectedMessage;
 
@@ -37,7 +27,7 @@ namespace client
         {
             _model = FindResource("Model") as Model;
             if (_model == null) throw new Exception("Cannot find model");
-            _input = FindName("Input") as RichTextBox;
+            _input = FindName("Input") as TextBox;
             if (_input == null) throw new Exception("Cannot find input field");
             _bot = new Bot();
             var channels = await _bot.Login();
@@ -66,44 +56,34 @@ namespace client
             }
             enumerator.Dispose();
             _selectedChannel = channel;
-            OnClear(this, new RoutedEventArgs());
+            ClearUserText();
         }
 
         private void OnClear(object sender, RoutedEventArgs e)
         {
-            _selectedMessage = null;
-            WriteUserText("");
+            ClearUserText();
         }
 
-        private string ReadUserText()
+        private void ClearUserText()
         {
-            var document = _input.Document;
-            var range = new TextRange(document.ContentStart, document.ContentEnd);
-            return range.Text;
-        }
-        
-        private void WriteUserText(string text)
-        {
-            var document = _input.Document;
-            var range = new TextRange(document.ContentStart, document.ContentEnd);
-            range.Text = text;
+            _selectedMessage = null;
+            _input.Text = "";
         }
 
         private void OnMessageSelected(object sender, SelectionChangedEventArgs e)
         {
             if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is IUserMessage message)) return;
             _selectedMessage = message;
-            WriteUserText(message.Content);
+            _input.Text = message.Content;
         }
         
         private async void OnSend(object sender, RoutedEventArgs e)
         {
-            var text = ReadUserText();
+            var text = _input.Text;
             if (_selectedMessage != null)
             {
                 // update message
                 await _selectedMessage.ModifyAsync(message => message.Content = text);
-                _selectedMessage = null;
                 // todo update message content automatically
             }
             else
@@ -111,6 +91,17 @@ namespace client
                 // send new message
                 var message = await _selectedChannel.SendMessageAsync(text);
                 _model.Messages.Add(message);
+                
+            }
+            ClearUserText();
+        }
+
+        private void OnEnter(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && !Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+            {
+                OnSend(sender, e);
+                e.Handled = true;
             }
         }
     }

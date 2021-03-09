@@ -23,13 +23,9 @@
                 <Button Click="OnSend">Send</Button>
                 <Button Click="OnClear">Cancel</Button>
             </StackPanel>
-            <RichTextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
+            <TextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible"
+                         PreviewKeyDown="OnEnter">
+            </TextBox>
         </DockPanel>
         <ListView x:Name="ChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Channels}"
                   ItemTemplate="{StaticResource ChannelTemplate}" SelectionChanged="OnChannelSelected" SelectionMode="Single">
