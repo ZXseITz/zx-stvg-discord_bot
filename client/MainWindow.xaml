@@ -13,6 +13,9 @@
         <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type webSocket:SocketTextChannel}">
             <TextBlock Text="{Binding Path=Name}"/>
         </DataTemplate>
+        <DataTemplate x:Key="MessageTemplate" DataType="{x:Type discord:IUserMessage}">
+            <TextBlock Text="{Binding Path=Content}"/>
+        </DataTemplate>
     </Window.Resources>
     <DockPanel DataContext="{StaticResource Model}">
         <DockPanel Height="100" DockPanel.Dock="Bottom">
@@ -28,8 +31,8 @@
         <ListView x:Name="ChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Channels}"
                   ItemTemplate="{StaticResource ChannelTemplate}" SelectionChanged="OnChannelSelected">
         </ListView>
-        <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}">
-            
+        <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}"
+                  ItemTemplate="{StaticResource MessageTemplate}" SelectionChanged="OnMessageSelected">
         </ListView>
     </DockPanel>
 </Window>

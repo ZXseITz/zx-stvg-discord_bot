@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Discord;
+using Discord.WebSocket;
 
 namespace client
 {
@@ -21,9 +22,11 @@ namespace client
     /// </summary>
     public partial class MainWindow : Window
     {
-        private RichTextBox _textbox;
         private Bot _bot;
         private Model _model;
+        private RichTextBox _input;
+        private ITextChannel _selectedChannel;
+        private IUserMessage _selectedMessage;
 
         public MainWindow()
         {
@@ -34,23 +37,51 @@ namespace client
         {
             _model = FindResource("Model") as Model;
             if (_model == null) throw new Exception("Cannot find model");
-            _textbox = FindName("Input") as RichTextBox;
-            _bot = new Bot(_model);
-            await _bot.Login();
+            _input = FindName("Input") as RichTextBox;
+            if (_input == null) throw new Exception("Cannot find input field");
+            _bot = new Bot();
+            var channels = await _bot.Login();
+            foreach (var channel in channels)
+            {
+                if (channel is ITextChannel textChannel)
+                {
+                    _model.Channels.Add(textChannel);
+                }
+            }
         }
 
         private async void OnChannelSelected(object sender, SelectionChangedEventArgs e)
         {
             var channel = e.AddedItems[0] as ITextChannel;
-            await _bot.SetChannel(channel);
+            _selectedChannel = channel;
+            _model.Messages.Clear();
+            var collection = await channel.GetMessagesAsync().FlattenAsync();
+            var enumerator = collection.Reverse().GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var message = enumerator.Current;
+                if (message is IUserMessage && message.Author.Id == _bot.UserId)
+                {
+                    _model.Messages.Add(message);
+                }
+            }
+            enumerator.Dispose();
         }
 
-
+        private void OnMessageSelected(object sender, SelectionChangedEventArgs e)
+        {
+            var message = e.AddedItems[0] as IUserMessage;
+            var document = _input.Document;
+            var range = new TextRange(document.ContentStart, document.ContentEnd);
+            range.Text = message.Content;
+        }
+        
         private async void OnSend(object sender, RoutedEventArgs e)
         {
-            var doc = _textbox.Document;
-            var range = new TextRange(doc.ContentStart, doc.ContentEnd);
-            await _bot.Send(range.Text);
+            var document = _input.Document;
+            var range = new TextRange(document.ContentStart, document.ContentEnd);
+            var message = await _selectedChannel.SendMessageAsync(range.Text);
+            _model.Messages.Add(message);
         }
     }
 }
