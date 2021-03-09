@@ -52,8 +52,7 @@ namespace client
 
         private async void OnChannelSelected(object sender, SelectionChangedEventArgs e)
         {
-            var channel = e.AddedItems[0] as ITextChannel;
-            _selectedChannel = channel;
+            if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is ITextChannel channel)) return;
             _model.Messages.Clear();
             var collection = await channel.GetMessagesAsync().FlattenAsync();
             var enumerator = collection.Reverse().GetEnumerator();
@@ -66,22 +65,53 @@ namespace client
                 }
             }
             enumerator.Dispose();
+            _selectedChannel = channel;
+            OnClear(this, new RoutedEventArgs());
+        }
+
+        private void OnClear(object sender, RoutedEventArgs e)
+        {
+            _selectedMessage = null;
+            WriteUserText("");
+        }
+
+        private string ReadUserText()
+        {
+            var document = _input.Document;
+            var range = new TextRange(document.ContentStart, document.ContentEnd);
+            return range.Text;
+        }
+        
+        private void WriteUserText(string text)
+        {
+            var document = _input.Document;
+            var range = new TextRange(document.ContentStart, document.ContentEnd);
+            range.Text = text;
         }
 
         private void OnMessageSelected(object sender, SelectionChangedEventArgs e)
         {
-            var message = e.AddedItems[0] as IUserMessage;
-            var document = _input.Document;
-            var range = new TextRange(document.ContentStart, document.ContentEnd);
-            range.Text = message.Content;
+            if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is IUserMessage message)) return;
+            _selectedMessage = message;
+            WriteUserText(message.Content);
         }
         
         private async void OnSend(object sender, RoutedEventArgs e)
         {
-            var document = _input.Document;
-            var range = new TextRange(document.ContentStart, document.ContentEnd);
-            var message = await _selectedChannel.SendMessageAsync(range.Text);
-            _model.Messages.Add(message);
+            var text = ReadUserText();
+            if (_selectedMessage != null)
+            {
+                // update message
+                await _selectedMessage.ModifyAsync(message => message.Content = text);
+                _selectedMessage = null;
+                // todo update message content automatically
+            }
+            else
+            {
+                // send new message
+                var message = await _selectedChannel.SendMessageAsync(text);
+                _model.Messages.Add(message);
+            }
         }
     }
 }

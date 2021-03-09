@@ -19,7 +19,10 @@
     </Window.Resources>
     <DockPanel DataContext="{StaticResource Model}">
         <DockPanel Height="100" DockPanel.Dock="Bottom">
-            <Button DockPanel.Dock="Right" Width="100" Click="OnSend">Send</Button>
+            <StackPanel DockPanel.Dock="Right" Width="200">
+                <Button Click="OnSend">Send</Button>
+                <Button Click="OnClear">Cancel</Button>
+            </StackPanel>
             <RichTextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
@@ -29,10 +32,10 @@
             </RichTextBox>
         </DockPanel>
         <ListView x:Name="ChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Channels}"
-                  ItemTemplate="{StaticResource ChannelTemplate}" SelectionChanged="OnChannelSelected">
+                  ItemTemplate="{StaticResource ChannelTemplate}" SelectionChanged="OnChannelSelected" SelectionMode="Single">
         </ListView>
         <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}"
-                  ItemTemplate="{StaticResource MessageTemplate}" SelectionChanged="OnMessageSelected">
+                  ItemTemplate="{StaticResource MessageTemplate}" SelectionChanged="OnMessageSelected" SelectionMode="Single">
         </ListView>
     </DockPanel>
 </Window>
