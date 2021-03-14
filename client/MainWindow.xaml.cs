@@ -62,10 +62,17 @@ namespace client
             if (e.NewValue is ChannelModel channel)
             {
                 _model.Messages.Clear();
-                foreach (var message in await channel.GetMessagesByUser(_bot.UserId))
+                var messages = await channel.FetchMessages();
+                var enumerator =  messages.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    _model.Messages.Add(message);
+                    var message = enumerator.Current;
+                    if (message is IUserMessage userMessage && message.Author.Id == _bot.UserId)
+                    {
+                        _model.Messages.Add(new MessageModel(userMessage));
+                    }
                 }
+                enumerator.Dispose();
                 _selectedChannel = channel;
                 ClearUserText();
             }
@@ -100,7 +107,7 @@ namespace client
             {
                 // send new message
                 var message = await _selectedChannel.SendMessage(text);
-                _model.Messages.Add(message);
+                _model.Messages.Add(new MessageModel(message));
                 
             }
             ClearUserText();

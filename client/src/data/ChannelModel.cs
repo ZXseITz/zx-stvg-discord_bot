@@ -16,27 +16,15 @@ namespace client.data
             _channel = channel;
         }
 
-        public async Task<MessageModel> SendMessage(string text)
+        public async Task<IUserMessage> SendMessage(string text)
         {
-            var userMessage = await _channel.SendMessageAsync(text);
-            return new MessageModel(userMessage);
+            return await _channel.SendMessageAsync(text);
         }
 
-        public async Task<List<MessageModel>> GetMessagesByUser(ulong userId)
+        public async Task<IEnumerable<IMessage>> FetchMessages()
         {
-            var result = new List<MessageModel>();
             var collection = await _channel.GetMessagesAsync().FlattenAsync();
-            var enumerator = collection.Reverse().GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var message = enumerator.Current;
-                if (message is IUserMessage userMessage && message.Author.Id == userId)
-                {
-                    result.Add(new MessageModel(userMessage));
-                }
-            }
-            enumerator.Dispose();
-            return result;
+            return collection.Reverse();
         }
     }
 }
