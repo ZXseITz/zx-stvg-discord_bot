@@ -93,6 +93,8 @@
     </ApplicationDefinition>
     <Compile Include="src\Bot.cs" />
     <Compile Include="src\data\AbstractModel.cs" />
+    <Compile Include="src\data\ChannelModel.cs" />
+    <Compile Include="src\data\MessageModel.cs" />
     <Compile Include="src\data\RootModel.cs" />
     <Compile Include="src\data\ServerModel.cs" />
     <Page Include="MainWindow.xaml">

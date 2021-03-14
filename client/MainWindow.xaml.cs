@@ -16,8 +16,8 @@ namespace client
         private Bot _bot;
         private RootModel _model;
         private TextBox _input;
-        private ITextChannel _selectedChannel;
-        private IUserMessage _selectedMessage;
+        private ChannelModel _selectedChannel;
+        private MessageModel _selectedMessage;
 
         public MainWindow()
         {
@@ -44,7 +44,7 @@ namespace client
                         && channel.PermissionOverwrites.Count > 0
                         && channel.PermissionOverwrites.Any(permission => permission.TargetId == role.Id))
                     {
-                        server.Channels.Add(textChannel);
+                        server.Channels.Add(new ChannelModel(textChannel));
                     }
                 }
                 _model.Servers.Add(server);
@@ -59,20 +59,13 @@ namespace client
 
         private async void OnChannelSelected(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (e.NewValue is ITextChannel channel)
+            if (e.NewValue is ChannelModel channel)
             {
                 _model.Messages.Clear();
-                var collection = await channel.GetMessagesAsync().FlattenAsync();
-                var enumerator = collection.Reverse().GetEnumerator();
-                while (enumerator.MoveNext())
+                foreach (var message in await channel.GetMessagesByUser(_bot.UserId))
                 {
-                    var message = enumerator.Current;
-                    if (message is IUserMessage && message.Author.Id == _bot.UserId)
-                    {
-                        _model.Messages.Add(message);
-                    }
+                    _model.Messages.Add(message);
                 }
-                enumerator.Dispose();
                 _selectedChannel = channel;
                 ClearUserText();
             }
@@ -80,9 +73,9 @@ namespace client
 
         private void OnMessageSelected(object sender, SelectionChangedEventArgs e)
         {
-            if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is IUserMessage message)) return;
+            if (!(e.AddedItems.Count > 0 && e.AddedItems[0] is MessageModel message)) return;
             _selectedMessage = message;
-            _input.Text = message.Content;
+            _input.Text = message.Text;
         }
 
         private void OnEnter(object sender, KeyEventArgs e)
@@ -100,13 +93,13 @@ namespace client
             if (_selectedMessage != null)
             {
                 // update message
-                await _selectedMessage.ModifyAsync(message => message.Content = text);
+                await _selectedMessage.Edit(text);
                 // todo update message content automatically
             }
             else
             {
                 // send new message
-                var message = await _selectedChannel.SendMessageAsync(text);
+                var message = await _selectedChannel.SendMessage(text);
                 _model.Messages.Add(message);
                 
             }
@@ -123,7 +116,7 @@ namespace client
             if (_selectedMessage != null)
             { 
                 _model.Messages.Remove(_selectedMessage);
-                await _selectedMessage.DeleteAsync();
+                await _selectedMessage.Delete();
             }
             ClearUserText();
         }

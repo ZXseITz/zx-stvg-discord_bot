@@ -4,15 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:data="clr-namespace:client.data"
-        xmlns:discord="clr-namespace:Discord;assembly=Discord.Net.Core"
         mc:Ignorable="d"
         Title="STVG Discord Client" Height="450" Width="800"
         Initialized="OnStartup">
     <Window.Resources>
-        <DataTemplate x:Key="MessageTemplate" DataType="{x:Type discord:IUserMessage}">
-            <TextBlock Text="{Binding Path=Content}"/>
+        <DataTemplate x:Key="MessageTemplate" DataType="{x:Type data:MessageModel}">
+            <TextBlock Text="{Binding Path=Text}"/>
         </DataTemplate>
-        <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type discord:ITextChannel}">
+        <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type data:ChannelModel}">
             <TextBlock Text="{Binding Path=Name}"/>
         </DataTemplate>
         <HierarchicalDataTemplate x:Key="ServerTemplate" DataType="{x:Type data:ServerModel}"

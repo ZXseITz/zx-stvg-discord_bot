@@ -8,14 +8,14 @@ namespace client.data
     {
         private readonly SocketGuild _guild;
         
-        public ObservableCollection<ITextChannel> Channels { get; }
+        public ObservableCollection<ChannelModel> Channels { get; }
         
         public string Name => _guild.Name;
 
         public ServerModel(SocketGuild guild)
         {
             _guild = guild;
-            Channels = new ObservableCollection<ITextChannel>();
+            Channels = new ObservableCollection<ChannelModel>();
         }
     }
 }
