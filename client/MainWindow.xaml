@@ -3,19 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:client"
+        xmlns:data="clr-namespace:client.data"
         xmlns:discord="clr-namespace:Discord;assembly=Discord.Net.Core"
-        xmlns:webSocket="clr-namespace:Discord.WebSocket;assembly=Discord.Net.WebSocket"
         mc:Ignorable="d"
         Title="STVG Discord Client" Height="450" Width="800"
         Initialized="OnStartup">
     <Window.Resources>
-        <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type webSocket:SocketTextChannel}">
-            <TextBlock Text="{Binding Path=Name}"/>
-        </DataTemplate>
         <DataTemplate x:Key="MessageTemplate" DataType="{x:Type discord:IUserMessage}">
             <TextBlock Text="{Binding Path=Content}"/>
         </DataTemplate>
+        <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type discord:ITextChannel}">
+            <TextBlock Text="{Binding Path=Name}"/>
+        </DataTemplate>
+        <HierarchicalDataTemplate x:Key="ServerTemplate" DataType="{x:Type data:ServerModel}"
+                                  ItemsSource="{Binding Channels}"
+                                  ItemTemplate="{StaticResource ChannelTemplate}">
+            <TextBlock Text="{Binding Path=Name}" />
+        </HierarchicalDataTemplate>
     </Window.Resources>
     <DockPanel DataContext="{StaticResource Model}">
         <DockPanel Height="100" DockPanel.Dock="Bottom">
@@ -28,9 +32,9 @@
                          PreviewKeyDown="OnEnter">
             </TextBox>
         </DockPanel>
-        <ListView x:Name="ChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Channels}"
-                  ItemTemplate="{StaticResource ChannelTemplate}" SelectionChanged="OnChannelSelected" SelectionMode="Single">
-        </ListView>
+        <TreeView x:Name="ServerChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Servers}"
+                  ItemTemplate="{StaticResource ServerTemplate}" SelectedItemChanged="OnChannelSelected">
+        </TreeView>
         <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}"
                   ItemTemplate="{StaticResource MessageTemplate}" SelectionChanged="OnMessageSelected" SelectionMode="Single">
         </ListView>

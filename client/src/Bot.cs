@@ -13,15 +13,12 @@ namespace client
         private SocketGuild _guild;
         private SemaphoreSlim _signal;
 
-        private ulong _guildId;
         public readonly ulong UserId;
 
         public Bot()
         {
             _client = new DiscordSocketClient();
-            _guildId = ulong.Parse(File.ReadAllText("../../../secret/dev_id"));
             UserId = ulong.Parse(File.ReadAllText("../../../secret/user_id"));
-            // var guildId = ulong.Parse(File.ReadAllText("../../../secret/guild_id"));  // todo enable prod
             _signal = new SemaphoreSlim(0, 1);
 
             _client.Ready += () =>
@@ -31,14 +28,13 @@ namespace client
             };
         }
 
-        public async Task<IReadOnlyCollection<SocketGuildChannel>> Login()
+        public async Task<IReadOnlyCollection<SocketGuild>> Login()
         {
             var token = File.ReadAllText("../../../secret/bot_token");
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             await _signal.WaitAsync();
-            _guild = _client.GetGuild(_guildId);
-            return _guild.Channels;
+            return _client.Guilds;
         }
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Documents;
 using Discord;
+using Discord.WebSocket;
 
-namespace client
+namespace client.data
 {
-    public class Model
+    public class RootModel : AbstractModel
     {
-        public ObservableCollection<ITextChannel> Channels { get; }
+        public ObservableCollection<ServerModel> Servers { get; }
         public ObservableCollection<IMessage> Messages { get; }
 
-        public Model()
+        public RootModel()
         {
-            Channels = new ObservableCollection<ITextChannel>();
+            Servers = new ObservableCollection<ServerModel>();
             Messages = new ObservableCollection<IMessage>();
         }
     }
