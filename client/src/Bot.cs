@@ -10,7 +10,6 @@ namespace client
     public class Bot
     {
         private readonly DiscordSocketClient _client;
-        private SocketGuild _guild;
         private SemaphoreSlim _signal;
 
         public readonly ulong UserId;

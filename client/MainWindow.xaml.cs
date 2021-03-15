@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using client.data;
 using Discord;
+using Microsoft.Win32;
 
 namespace client
 {
@@ -18,6 +20,7 @@ namespace client
         private TextBox _input;
         private ChannelModel _selectedChannel;
         private MessageModel _selectedMessage;
+        private string _path;
 
         public MainWindow()
         {
@@ -100,13 +103,18 @@ namespace client
             if (_selectedMessage != null)
             {
                 // update message
+                if (_path != null)
+                {
+                    await _selectedMessage.Edit(text);
+                }
                 await _selectedMessage.Edit(text);
                 // todo update message content automatically
             }
             else
             {
                 // send new message
-                var message = await _selectedChannel.SendMessage(text);
+                var message = await (_path != null ? _selectedChannel.SendFile(_path, text)
+                    :  _selectedChannel.SendMessage(text));
                 _model.Messages.Add(new MessageModel(message));
                 
             }
@@ -126,6 +134,12 @@ namespace client
                 await _selectedMessage.Delete();
             }
             ClearUserText();
+        }
+
+        private void OnUpload(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+            _path = openFileDialog.ShowDialog() == true ? openFileDialog.FileName : null;
         }
     }
 }

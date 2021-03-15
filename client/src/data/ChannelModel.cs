@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -19,6 +20,14 @@ namespace client.data
         public async Task<IUserMessage> SendMessage(string text)
         {
             return await _channel.SendMessageAsync(text);
+        }
+
+        public async Task<IUserMessage> SendFile(string path, string text)
+        {
+            using (var fs = File.OpenRead(path))
+            {
+                return await _channel.SendFileAsync(fs, Path.GetFileName(path), text);
+            }
         }
 
         public async Task<IEnumerable<IMessage>> FetchMessages()

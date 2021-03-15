@@ -9,10 +9,10 @@
         Initialized="OnStartup">
     <Window.Resources>
         <DataTemplate x:Key="MessageTemplate" DataType="{x:Type data:MessageModel}">
-            <TextBlock Text="{Binding Path=Text}"/>
+                <TextBlock Text="{Binding Path=Text}" />
         </DataTemplate>
         <DataTemplate x:Key="ChannelTemplate" DataType="{x:Type data:ChannelModel}">
-            <TextBlock Text="{Binding Path=Name}"/>
+            <TextBlock Text="{Binding Path=Name}" />
         </DataTemplate>
         <HierarchicalDataTemplate x:Key="ServerTemplate" DataType="{x:Type data:ServerModel}"
                                   ItemsSource="{Binding Channels}"
@@ -22,20 +22,19 @@
     </Window.Resources>
     <DockPanel DataContext="{StaticResource Model}">
         <DockPanel Height="100" DockPanel.Dock="Bottom">
-            <StackPanel DockPanel.Dock="Right" Width="200">
+            <StackPanel DockPanel.Dock="Right" Width="100">
                 <Button Click="OnSend">Send</Button>
                 <Button Click="OnDelete">Delete</Button>
                 <Button Click="OnClear">Cancel</Button>
             </StackPanel>
+            <Button DockPanel.Dock="Left" Click="OnUpload">Upload</Button>
             <TextBox x:Name="Input" AcceptsReturn="True" VerticalScrollBarVisibility="Visible"
-                         PreviewKeyDown="OnEnter">
-            </TextBox>
+                     PreviewKeyDown="OnEnter" />
         </DockPanel>
         <TreeView x:Name="ServerChannelView" Width="200" DockPanel.Dock="Left" ItemsSource="{Binding Path=Servers}"
-                  ItemTemplate="{StaticResource ServerTemplate}" SelectedItemChanged="OnChannelSelected">
-        </TreeView>
+                  ItemTemplate="{StaticResource ServerTemplate}" SelectedItemChanged="OnChannelSelected" />
         <ListView x:Name="MessageView" ItemsSource="{Binding Path=Messages}"
-                  ItemTemplate="{StaticResource MessageTemplate}" SelectionChanged="OnMessageSelected" SelectionMode="Single">
-        </ListView>
+                  ItemTemplate="{StaticResource MessageTemplate}" SelectionChanged="OnMessageSelected"
+                  SelectionMode="Single" />
     </DockPanel>
 </Window>
